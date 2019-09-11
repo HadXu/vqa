@@ -113,9 +113,17 @@ def get_train():
         if len(attr) < 96:
             attr += (96 - len(attr)) * [np.zeros(2)]
 
-        train[v_id] = [ques, prior, attr, y[i]]
+        train[v_id] = [ques, prior, attr, y[i], q_str, ans]
 
     return train
+
+
+def do_train(model, loader, optimizer, fn_loss, device):
+    model.train()
+
+
+def do_valid(model, loader, fn_loss, device):
+    model.eval()
 
 
 if __name__ == '__main__':
