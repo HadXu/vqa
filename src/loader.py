@@ -24,19 +24,20 @@ class VQADataset(Dataset):
         ques, prior, attr, y, q_str, ans = self.train_dict[name]
 
         prior = np.array(prior)
+
         ques = np.array(ques)
         attr = np.array(attr)
 
-        return video, torch.LongTensor(attr), torch.LongTensor(ques), torch.FloatTensor(prior), \
-               torch.FloatTensor(y), ans
+        return torch.from_numpy(video).float(), torch.from_numpy(attr).long(), torch.from_numpy(ques).long(), \
+               torch.from_numpy(prior).float(), torch.from_numpy(y).float(), ans
 
     def __len__(self):
         return len(self.names)
 
 
 if __name__ == '__main__':
-    names = ['ZJL10000']
-    loader = DataLoader(VQADataset(names))
+    names = ['ZJL10000', 'ZJL10000']
+    loader = DataLoader(VQADataset(names), batch_size=2)
     for video, attr, ques, prior, y, _ in loader:
         print(video.size())
         print(attr.size())

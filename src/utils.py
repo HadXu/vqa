@@ -4,6 +4,7 @@ from keras.preprocessing.sequence import pad_sequences
 import pickle
 import numpy as np
 import torch
+from tqdm import tqdm
 
 
 def load_video_attr(topk=100):
@@ -106,7 +107,10 @@ def get_train():
             else:
                 prior.append(np.zeros(len(i2ans)))
 
-        need_q = [i for i, q in enumerate(ques) if q != '_UNKQ_']
+        need_q = [q for i, q in enumerate(ques) if q != '_UNKQ_']
+
+        if len(need_q) < 5:
+            need_q.append(need_q[np.random.choice(len(need_q))])
 
         v_id = samples['video_id']
         attr = [attr_seq[attr2i[a]] for a in video_attr[v_id]]
@@ -114,15 +118,16 @@ def get_train():
         if len(attr) < 96:
             attr += (96 - len(attr)) * [np.zeros(2)]
 
-        train[v_id] = [ques, prior, attr, y[i], q_str, ans]
+        train[v_id] = [need_q, prior, attr, y[i], q_str, ans]
 
     return train
 
 
 def do_train(model, loader, optimizer, fn_loss, device):
     model.train()
-    for video, attr, ques, prior, y, _ in loader:
+    for video, attr, ques, prior, y, _ in tqdm(loader):
         video, attr, ques, prior, y = map(lambda x: x.to(device), [video, attr, ques, prior, y])
+
         pred = model(video, ques, attr, prior)
         loss = fn_loss(y, pred)
 
@@ -164,7 +169,7 @@ def do_valid(model, loader, fn_loss, device):
 
     anses = []
     indexs = []
-    for video, attr, ques, prior, y, ans in loader:
+    for video, attr, ques, prior, y, ans in tqdm(loader):
         with torch.no_grad():
             video, attr, ques, prior, y = map(lambda x: x.to(device), [video, attr, ques, prior, y])
             pred = model(video, ques, attr, prior)

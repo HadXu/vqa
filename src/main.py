@@ -5,6 +5,7 @@ from loader import VQADataset
 from utils import do_train, do_valid
 from models import VQANet
 from torch.optim import Adam
+import os
 
 device = torch.device('cpu')
 
@@ -25,15 +26,23 @@ def focal_loss_fixed(y_true, y_pred):
 
 def main():
     print('~~~~~~~~~~ start training ~~~~~~~~~~~')
-    names = ['ZJL10000', 'ZJL10000']
-    loader = DataLoader(VQADataset(names), batch_size=2)
+    # names = ['ZJL10000', 'ZJL10000']
 
-    model = VQANet()
+    names = os.listdir('../input/rcnn/')
+    names = [x.split('.')[0] for x in names]
+
+    tr_names = names[:8000]
+    val_names = names[8000:]
+
+    tr_loader = DataLoader(VQADataset(tr_names), batch_size=2)
+    val_loader = DataLoader(VQADataset(val_names), batch_size=2)
+
+    model = VQANet().to(device)
     optimizer = Adam(model.parameters(), lr=1e-3)
 
     for e in range(100):
-        do_train(model, loader, optimizer, focal_loss_fixed, device=device)
-        do_valid(model, loader, focal_loss_fixed, device=device)
+        do_train(model, tr_loader, optimizer, focal_loss_fixed, device=device)
+        do_valid(model, val_loader, focal_loss_fixed, device=device)
 
 
 if __name__ == '__main__':
