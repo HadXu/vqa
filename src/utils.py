@@ -3,6 +3,7 @@ import json
 from keras.preprocessing.sequence import pad_sequences
 import pickle
 import numpy as np
+import torch
 
 
 def load_video_attr(topk=100):
@@ -120,11 +121,63 @@ def get_train():
 
 def do_train(model, loader, optimizer, fn_loss, device):
     model.train()
+    for video, attr, ques, prior, y, _ in loader:
+        video, attr, ques, prior, y = map(lambda x: x.to(device), [video, attr, ques, prior, y])
+        pred = model(video, ques, attr, prior)
+        loss = fn_loss(y, pred)
+
+        optimizer.zero_grad()
+        loss.backward()
+
+        print(loss.item())
+
+
+def get_score(ans, index):
+    with open('../input/working/i2ans.json', 'r') as f:
+        i2ans = json.loads(f.read())
+
+    res = []
+    for item in ans:
+        r = zip(*item)
+        res.append(list(r))
+
+    res = list(zip(*res))
+
+    # index[0][0] = 448
+    # index[0][1] = 367
+
+    score = 0
+    c = 0
+    for ans, idx in zip(res, index):
+        for a, i in zip(ans, idx):
+            pred_a = i2ans[i]
+
+            if pred_a in a:
+                score += 1
+            c += 1
+
+    return score / float(c)
 
 
 def do_valid(model, loader, fn_loss, device):
     model.eval()
 
+    anses = []
+    indexs = []
+    for video, attr, ques, prior, y, ans in loader:
+        with torch.no_grad():
+            video, attr, ques, prior, y = map(lambda x: x.to(device), [video, attr, ques, prior, y])
+            pred = model(video, ques, attr, prior)
+            # loss = fn_loss(y, pred)
+
+            index = torch.argmax(pred, dim=2)
+
+            anses += ans
+            indexs += index.cpu().numpy().tolist()
+
+    score = get_score(anses, indexs)
+    print('score:', score)
+
 
 if __name__ == '__main__':
-    get_train()
+    pass

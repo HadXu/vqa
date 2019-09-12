@@ -9,4 +9,10 @@ def get_features():
 
 
 if __name__ == '__main__':
-    get_features()
+    ans = [[('mirror', 'mirror'), ('people', 'people')],
+           [('bathroom', 'bathroom'), ('in front of mirror', 'in front of mirror'), ('indoor', 'indoor')],
+           [('yellow', 'yellow'), ('pale yellow', 'pale yellow'), ('light yellow', 'light yellow')],
+           [('speaking', 'speaking')],
+           [('two', 'two')]]
+
+

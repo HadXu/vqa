@@ -10,7 +10,7 @@ def distance(q, v, dist, dim=2):
         return q * v / (torch.sum(q ** 2, dim=dim, keepdim=True) + torch.sum(v ** 2, dim=dim, keepdim=True))
 
 
-def temporal_attention(q, v, use_conv=False):
+def temporal_attention(q, v):
     def get_atten_w(q_list, v_encode, fca):
         w_list = []
         for q in q_list:
@@ -18,7 +18,7 @@ def temporal_attention(q, v, use_conv=False):
 
             w = fca(merged)
             w = w.view(-1)
-            w = F.softmax(w)
+            w = F.softmax(w, dim=0)
             w_list.append(w)
 
         w = torch.mean(torch.cat(w_list))
@@ -50,39 +50,55 @@ class VQANet(nn.Module):
             nn.Dropout2d(0.05),
         )
 
-        self.q_pro = nn.Sequential(
+        self.q_process = nn.Sequential(
+            self.emb,
             nn.Dropout(0.05)
         )
 
+        self.video_fc = nn.Linear(2048, 300)
+        self.fc = nn.Linear(1200, 951)
+
     def forward(self, video, ques, attr, prior):
-        print(video.size())
-        print(ques.size())
-        print(attr.size())
-        print(prior.size())
-
-        print('============')
-
         q1, q2, q3, q4, q5 = torch.split(ques, 1, dim=1)
         q1, q2, q3, q4, q5 = map(lambda x: torch.squeeze(x, dim=1), [q1, q2, q3, q4, q5])
-        q1, q2, q3, q4, q5 = map(self.emb, [q1, q2, q3, q4, q5])
-        q1, q2, q3, q4, q5 = map(self.q_pro, [q1, q2, q3, q4, q5])
+        q1, q2, q3, q4, q5 = map(self.q_process, [q1, q2, q3, q4, q5])
 
         v = self.video_dp1(video)
         attr = self.emb(attr)
 
         v = temporal_attention([q1, q2, q3, q4, q5], v)
 
-        print(v.size())
-        print(attr.size())
+        v = torch.mean(v, dim=2)
 
-        return v
+        v = self.video_fc(v)
+
+        attr = torch.mean(attr, dim=2)
+        q1, q2, q3, q4, q5 = map(lambda x: torch.mean(x, dim=1), [q1, q2, q3, q4, q5])  # bs*300
+
+        a1, a2, a3, a4, a5 = map(lambda x: x.unsqueeze(dim=1) * attr, [q1, q2, q3, q4, q5])  # bs*96*300
+        a1, a2, a3, a4, a5 = map(lambda x: torch.mean(x, dim=1), [a1, a2, a3, a4, a5])  # bs*300
+
+        q = torch.stack([q1, q2, q3, q4, q5], dim=1)  # bs * 5 * 300
+        attr = torch.stack([a1, a2, a3, a4, a5], dim=1)  # bs * 5 * 300
+
+        v1 = torch.mean(q.unsqueeze(dim=2) * v.unsqueeze(dim=1), dim=2)
+        v2 = torch.mean(attr.unsqueeze(dim=2) * v.unsqueeze(dim=1), dim=2)
+
+        fc = torch.cat([q, attr, v1, v2], dim=2)
+
+        out = prior * F.sigmoid(self.fc(fc))
+
+        return out
 
 
 if __name__ == '__main__':
-    names = ['ZJL10000']
-    loader = DataLoader(VQADataset(names))
+    video = torch.randn(2, 16, 36, 2048)
+    attr = torch.randint(100, size=(2, 96, 2)).long()
+    ques = torch.randint(100, size=(2, 5, 14)).long()
+    prior = torch.randint(1, size=(2, 5, 951)).float()
 
     net = VQANet()
 
-    for video, attr, ques, prior, y, ans in loader:
-        pred = net(video, ques, attr, prior)
+    pred = net(video, ques, attr, prior)
+
+    print(pred.size())

@@ -27,7 +27,8 @@ class VQADataset(Dataset):
         ques = np.array(ques)
         attr = np.array(attr)
 
-        return video, torch.LongTensor(attr), torch.LongTensor(ques), prior, y, ans
+        return video, torch.LongTensor(attr), torch.LongTensor(ques), torch.FloatTensor(prior), \
+               torch.FloatTensor(y), ans
 
     def __len__(self):
         return len(self.names)
