@@ -142,8 +142,6 @@ def do_train(model, loader, optimizer, fn_loss, device):
         optimizer.zero_grad()
         loss.backward()
 
-        print(loss.item())
-
 
 def get_score(ans, index):
     with open('../input/working/i2ans.json', 'r') as f:
@@ -155,9 +153,6 @@ def get_score(ans, index):
         res.append(list(r))
 
     res = list(zip(*res))
-
-    # index[0][0] = 448
-    # index[0][1] = 367
 
     score = 0
     c = 0
