@@ -87,7 +87,6 @@ def get_train():
         q_str = []
 
         prior = []
-
         for q_i in range(5):
             q = samples['q' + str(q_i)]
 
@@ -107,10 +106,17 @@ def get_train():
             else:
                 prior.append(np.zeros(len(i2ans)))
 
-        need_q = [q for i, q in enumerate(ques) if q != '_UNKQ_']
+        need_q = [i for i, q in enumerate(ques) if q != '_UNKQ_']
 
-        if len(need_q) < 5:
-            need_q.append(need_q[np.random.choice(len(need_q))])
+        for q_i in range(5):
+            q = samples['q' + str(q_i)]
+            if q == '_UNKQ_':
+                j = np.random.choice(need_q)
+                ques[q_i] = ques[j]
+                ans[q_i] = ans[j]
+                q_str[q_i] = q_str[j]
+                prior[q_i] = prior[j]
+                y[i][q_i] = y[i][j]
 
         v_id = samples['video_id']
         attr = [attr_seq[attr2i[a]] for a in video_attr[v_id]]
@@ -118,7 +124,9 @@ def get_train():
         if len(attr) < 96:
             attr += (96 - len(attr)) * [np.zeros(2)]
 
-        train[v_id] = [need_q, prior, attr, y[i], q_str, ans]
+        assert len(ques) == len(prior) == len(y[i]) == len(q_str) == len(ans) == 5
+
+        train[v_id] = [ques, prior, attr, y[i], q_str, ans]
 
     return train
 
