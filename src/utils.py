@@ -141,6 +141,7 @@ def do_train(model, loader, optimizer, fn_loss, device):
 
         optimizer.zero_grad()
         loss.backward()
+        optimizer.step()
 
 
 def get_score(ans, index):

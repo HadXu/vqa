@@ -1,7 +1,5 @@
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
-from loader import VQADataset
 from torch.nn import functional as F
 
 
@@ -86,7 +84,7 @@ class VQANet(nn.Module):
 
         fc = torch.cat([q, attr, v1, v2], dim=2)
 
-        out = prior * F.sigmoid(self.fc(fc))
+        out = prior * torch.sigmoid(self.fc(fc))
 
         return out
 
