@@ -7,7 +7,7 @@
 
 ![](imgs/vqa-1.png)
 
-只不过这个工作是关于视频问答的:blush:
+**只不过这个工作是关于视频问答的:blush:**
 
 - 这个repo关于什么?
 该Repo记录了我的毕业设计（基于先验MASK的视频问答），传统的算法要么耗时要么精度不高，我们采用了FFmpeg来抽取视频的关键帧，然后通过Faster R-CNN结合ResNet-101来抽取视频关键帧的信息（包括对象属性以及对象特征），接下来采用了三种注意力机制来全面提取视频与问题之间的特征，最后根据不同的问题进行**先验MASK**， 从而得到问题的答案。
@@ -15,7 +15,7 @@
 
 
 
-- 算法原理
+## 算法原理
 
 ![](imgs/ZJB_3.png)
 
@@ -67,8 +67,9 @@ make -j8 && make pycaffe
 
 模型训练及推断环境
 准备两张显存大于8G的卡(fold并行)  耗时约4-6小时
-CUDA Version 9.0.176
-cudnn 7.0.5
+
+* CUDA Version 9.0.176
+* cudnn 7.0.5
 
 ## Usage
 
@@ -124,15 +125,15 @@ todo
 
 ## Cites
 
-[1] Antol S, Agrawal A, Lu J, et al. VQA: Visual Question Answering[C]// IEEE International Conference on Computer Vision. 2017.
-[2] Yin Zhang, Rong Jin, Zhi-Hua Zhou. Understanding bag-of-words model: a statistical framework[J]. International Journal of Machine Learning & Cybernetics, 1(1-4):43-52.
-[3] Bai Xue, Chen Fu, Zhan Shaobin. A Study on Sentiment Computing and Classification of Sina Weibo with Word2vec[C]// 2014 IEEE International Congress on Big Data (BigData Congress). IEEE, 2014.
-[4] Devlin, Jacob, et al. "Bert: Pre-training of deep bidirectional transformers for language understanding." arXiv preprint arXiv:1810.04805 (2018).
-[5] Yang, Zhilin, et al. "Xlnet: Generalized autoregressive pretraining for language understanding." Advances in neural information processing systems. 2019.
-[6] Zhou, Bolei, et al. "Simple baseline for visual question answering." arXiv preprint arXiv:1512.02167 (2015).
-[7] Simonyan, Karen, and Andrew Zisserman. "Very deep convolutional networks for large-scale image recognition." arXiv preprint arXiv:1409.1556 (2014).
-[8] Hochreiter, Sepp, and Jürgen Schmidhuber. "Long short-term memory." Neural computation 9.8 (1997): 1735-1780.
-[9] Lin, Tsung-Yi, et al. "Microsoft coco: Common objects in context." European conference on computer vision. Springer, Cham, 2014.
-[10] Yu, Zhou, et al. "Beyond bilinear: Generalized multimodal factorized high-order pooling for visual question answering." IEEE transactions on neural networks and learning systems 29.12 (2018): 5947-5959.
+1. Antol S, Agrawal A, Lu J, et al. VQA: Visual Question Answering[C]// IEEE International Conference on Computer Vision. 2017.
+2. Yin Zhang, Rong Jin, Zhi-Hua Zhou. Understanding bag-of-words model: a statistical framework[J]. International Journal of Machine Learning & Cybernetics, 1(1-4):43-52.
+3. Bai Xue, Chen Fu, Zhan Shaobin. A Study on Sentiment Computing and Classification of Sina Weibo with Word2vec[C]// 2014 IEEE International Congress on Big Data (BigData Congress). IEEE, 2014.
+4. Devlin, Jacob, et al. "Bert: Pre-training of deep bidirectional transformers for language understanding." arXiv preprint arXiv:1810.04805 (2018).
+5. Yang, Zhilin, et al. "Xlnet: Generalized autoregressive pretraining for language understanding." Advances in neural information processing systems. 2019.
+6. Zhou, Bolei, et al. "Simple baseline for visual question answering." arXiv preprint arXiv:1512.02167 (2015).
+7. Simonyan, Karen, and Andrew Zisserman. "Very deep convolutional networks for large-scale image recognition." arXiv preprint arXiv:1409.1556 (2014).
+8. Hochreiter, Sepp, and Jürgen Schmidhuber. "Long short-term memory." Neural computation 9.8 (1997): 1735-1780.
+9. Lin, Tsung-Yi, et al. "Microsoft coco: Common objects in context." European conference on computer vision. Springer, Cham, 2014.
+10. Yu, Zhou, et al. "Beyond bilinear: Generalized multimodal factorized high-order pooling for visual question answering." IEEE transactions on neural networks and learning systems 29.12 (2018): 5947-5959.
 
 
