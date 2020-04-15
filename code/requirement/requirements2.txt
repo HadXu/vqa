@@ -1,0 +1,5 @@
+tqdm==4.26.0
+opencv-python==3.4.0.12
+Cython==0.28.5
+easydict==1.8.0
+
