@@ -1,6 +1,6 @@
 tensorflow-gpu==1.7.0
 Keras==2.1.5
-numpy==1.15.1
+numpy==1.22.0
 pandas==0.22.0
 tqdm==4.22.0
 scikit-learn==0.19.1
